@@ -1,0 +1,145 @@
+Sub Corelap()
+Dim stations As Integer
+Dim i As Integer
+Dim j As Integer
+Dim aVal As Double
+Dim eVal As Double
+Dim iVal As Double
+Dim oVal As Double
+Dim uVal As Double
+Dim xVal As Double
+Dim boxRange As Range
+
+
+stations = InputBox("Number of Stations (Rows/Cols)")
+aVal = InputBox("A value")
+eVal = InputBox("E value")
+iVal = InputBox("I value")
+oVal = InputBox("O value")
+uVal = InputBox("U value")
+xVal = InputBox("X value")
+
+
+For i = 1 To stations
+
+Range("a2").offset(i, 0).Value = i
+Range("a2").offset(0, i).Value = i
+
+Range("a2").offset(i, 0).Borders(xlEdgeRight).LineStyle = xlDouble
+Range("a2").offset(0, i).Borders(xlEdgeBottom).LineStyle = xlDouble
+
+Next i
+
+'Letter
+Cells(2, stations + 2).Value = "A"
+Cells(2, stations + 3).Value = "E"
+Cells(2, stations + 4).Value = "I"
+Cells(2, stations + 5).Value = "O"
+Cells(2, stations + 6).Value = "U"
+Cells(2, stations + 7).Value = "X"
+Cells(2, stations + 8).Value = "TCR"
+Range(Cells(2, stations + 2), Cells(2, stations + 8)).HorizontalAlignment = xlRight
+
+
+'Leter Value
+Cells(1, stations + 2).Value = aVal
+Cells(1, stations + 3).Value = eVal
+Cells(1, stations + 4).Value = iVal
+Cells(1, stations + 5).Value = oVal
+Cells(1, stations + 6).Value = uVal
+Cells(1, stations + 7).Value = xVal
+
+'Sum Formual A-X
+For i = 1 To stations
+    Cells(2 + i, stations + 2).FormulaR1C1 = "=COUNTIF(RC[" & -stations - 0 & "]:RC[-1],""A"")*R[" & -i - 1 & "]C"
+Next i
+For i = 1 To stations
+    Cells(2 + i, stations + 3).FormulaR1C1 = "=COUNTIF(RC[" & -stations - 1 & "]:RC[-2],""E"")*R[" & -i - 1 & "]C"
+Next i
+For i = 1 To stations
+    Cells(2 + i, stations + 4).FormulaR1C1 = "=COUNTIF(RC[" & -stations - 2 & "]:RC[-3],""I"")*R[" & -i - 1 & "]C"
+Next i
+For i = 1 To stations
+    Cells(2 + i, stations + 5).FormulaR1C1 = "=COUNTIF(RC[" & -stations - 3 & "]:RC[-4],""O"")*R[" & -i - 1 & "]C"
+Next i
+For i = 1 To stations
+    Cells(2 + i, stations + 6).FormulaR1C1 = "=COUNTIF(RC[" & -stations - 4 & "]:RC[-5],""U"")*R[" & -i - 1 & "]C"
+Next i
+For i = 1 To stations
+    Cells(2 + i, stations + 7).FormulaR1C1 = "=COUNTIF(RC[" & -stations - 5 & "]:RC[-6],""X"")*R[" & -i - 1 & "]C"
+Next i
+For i = 1 To stations 'TCR
+    Cells(2 + i, stations + 8).FormulaR1C1 = "=SUM(RC[-6]:RC[-1])"
+Next i
+
+'sets bottom triangle equal to top
+For col = 1 To stations
+    Count = 1
+    For Row = col To stations - 1
+        Range("a3").offset(Row, col).FormulaR1C1 = "=r[" & -Count & "]c[" & Count & "]"
+        Count = Count + 1
+    Next Row
+Next col
+
+
+'Adds conditional format for the As
+Range(Cells(3, 2), Cells(2 + stations, 1 + stations)).Select
+    Selection.FormatConditions.Add Type:=xlCellValue, Operator:=xlEqual, _
+        Formula1:="=""A"""
+    Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+    With Selection.FormatConditions(1).Font
+        .color = -16752384
+        .TintAndShade = 0
+    End With
+    With Selection.FormatConditions(1).Interior
+        .PatternColorIndex = xlAutomatic
+        .color = 13561798
+        .TintAndShade = 0
+    End With
+    
+'Adds conditional format for TCR
+    Range(Cells(3, 8 + stations), Cells(3 + stations, 8 + stations)).Select
+    Selection.FormatConditions.AddColorScale ColorScaleType:=3
+    Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+    Selection.FormatConditions(1).ColorScaleCriteria(1).Type = _
+        xlConditionValueLowestValue
+    With Selection.FormatConditions(1).ColorScaleCriteria(1).FormatColor
+        .color = 7039480
+        .TintAndShade = 0
+    End With
+    Selection.FormatConditions(1).ColorScaleCriteria(2).Type = _
+        xlConditionValuePercentile
+    Selection.FormatConditions(1).ColorScaleCriteria(2).Value = 50
+    With Selection.FormatConditions(1).ColorScaleCriteria(2).FormatColor
+        .color = 8711167
+        .TintAndShade = 0
+    End With
+    Selection.FormatConditions(1).ColorScaleCriteria(3).Type = _
+        xlConditionValueHighestValue
+    With Selection.FormatConditions(1).ColorScaleCriteria(3).FormatColor
+        .color = 8109667
+        .TintAndShade = 0
+    End With
+    
+    Range(Cells(3, 2), Cells(2 + stations, 1 + stations)).Select
+        Selection.FormatConditions.Add Type:=xlCellValue, Operator:=xlEqual, _
+        Formula1:="=""X"""
+    Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+    With Selection.FormatConditions(1).Font
+        .color = -16383844
+        .TintAndShade = 0
+    End With
+    With Selection.FormatConditions(1).Interior
+        .PatternColorIndex = xlAutomatic
+        .color = 13551615
+        .TintAndShade = 0
+    End With
+    Selection.FormatConditions(1).StopIfTrue = False
+
+End Sub
+
+
+Sub clear_fmt()
+Cells.ClearContents
+Cells.ClearFormats
+End Sub
