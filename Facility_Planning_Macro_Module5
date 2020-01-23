@@ -1,0 +1,72 @@
+Sub Frac()
+Dim proIn As Double
+Dim proOut As Double
+Dim defPer As Double
+Dim num As Integer
+Dim er As Integer
+
+num = InputBox("n=")
+
+Cells(2, 3).Value = "F"
+For i = 1 To num
+Cells(2 + i, 2).Value = i
+Cells(2 + i, 3).FormulaR1C1 = "=(rc[3]*rc[15])/(rc[9]*rc[12]*rc[6])"
+Next i
+
+Cells(2, 6).Value = "S"
+For i = 1 To num
+Cells(2 + i, 5).Value = i
+Next i
+
+Cells(2, 9).Value = "R"
+For i = 1 To num
+Cells(2 + i, 8).Value = i
+Next i
+
+Cells(2, 12).Value = "E"
+For i = 1 To num
+Cells(2 + i, 11).Value = i
+Next i
+
+Cells(2, 15).Value = "H"
+For i = 1 To num
+Cells(2 + i, 14).Value = i
+Next i
+
+
+
+er = 5 * 3
+
+Cells(2, 3 + er).Value = "I[k]"
+For i = 1 To num
+Cells(2 + i, 2 + er).Value = i
+Cells(2 + i, 3 + er).FormulaR1C1 = "=rc[3]/(1-rc[8])"
+Next i
+
+Cells(2, 6 + er).Value = "O[k]"
+For i = 1 To num
+Cells(2 + i, 5 + er).Value = i
+Next i
+For i = 1 To num - 1
+Cells(2 + i, 6 + er).FormulaR1C1 = "=r[1]c[-3]"
+Next i
+Cells(2 + num, 6 + er).Borders.LineStyle = xlSingle
+
+Cells(2, 9 + er).Value = "D[k]"
+Cells(2, 10 + er).Value = "R[k]"
+Cells(2, 11 + er).Value = "Total %"
+Cells(2, 12 + er).Value = "Scrap Cost/Unit"
+Cells(2, 13 + er).Value = "Scrap Cost Total"
+For i = 1 To num
+Cells(2 + i, 8 + er).Value = i
+Cells(2 + i, 11 + er).FormulaR1C1 = "=rc[-2]*(1-rc[-1])"
+Cells(2 + i, 10 + er).Value = 0
+Cells(2 + i, 13 + er).FormulaR1C1 = "=rc[-1]*(rc[-10]-rc[-7])"
+Next i
+Cells(3 + num, 13 + er).FormulaR1C1 = "=sum(r[" & -num & "]c:r[-1]c)"
+Cells(3 + num, 13 + er).Borders.LineStyle = xlSingle
+
+
+
+ 
+End Sub
