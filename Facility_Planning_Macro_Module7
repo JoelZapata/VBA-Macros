@@ -1,0 +1,52 @@
+Sub conv()
+Dim p, s, k, r As Integer
+
+p = InputBox("Period")
+s = InputBox("Stations")
+k = InputBox("Carriers")
+r = k Mod p
+
+Cells(2, 1).Value = "Period"
+Cells(2, 2).Value = "Stations"
+Cells(2, 3).Value = "Carriers"
+Cells(2, 4).Value = "R"
+
+Cells(3, 1).Value = p
+Cells(3, 2).Value = s
+Cells(3, 3).Value = k
+Cells(3, 4).Value = r
+
+
+For i = 1 To s
+    Cells(5 + i, 1).Value = "f" & i & "(n)="
+Next i
+    Cells(6 + s, 1).Value = "F1(n)="
+    
+For i = 1 To p
+    Cells(6 + s, 1 + i).FormulaR1C1 = "=SUM(R[" & -s & "]C:R[-1]C)"
+Next i
+
+    Cells(6, 2 + p).Value = "H1*(n)="
+    Cells(6, 3 + p).Value = 0
+For i = 2 To s
+    Cells(5 + i, 2 + p).Value = "H" & i & "*(n)="
+    For j = 1 To p
+        Cells(5 + i, 2 + p + j).FormulaR1C1 = "=R[-1]C-R[-1]C[" & -p - 1 & "]"
+    Next j
+Next i
+    Cells(7 + s, 2 + p).Value = "C="
+    Cells(7 + s, 3 + p).FormulaR1C1 = "=MIN(R[" & -s - 1 & "]C:R[-2]C[" & p - 1 & "])"
+
+
+For i = 1 To s
+    Cells(5 + i, 4 + 2 * p).Value = "H" & i & "(n)="
+    For j = 1 To p
+        Cells(5 + i, 4 + 2 * p + j).FormulaR1C1 = "=RC[" & -p - 2 & "]-R[" & s + 2 - i & "]C[" & -p - 1 - j & "]"
+    Next j
+Next i
+    Cells(7 + s, 4 + 2 * p).Value = "B(capacity/carrier)="
+    Cells(7 + s, 5 + 2 * p).FormulaR1C1 = "=MAX(R[" & -s - 1 & "]C:R[-2]C[" & p - 1 & "])"
+    Cells(8 + s, 4 + 2 * p).Value = "Inventory="
+    Cells(8 + s, 5 + 2 * p).FormulaR1C1 = "=SUM(R[" & -s - 2 & "]C:R[-3]C[" & p - 1 & "])"
+
+End Sub
