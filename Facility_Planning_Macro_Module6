@@ -1,0 +1,58 @@
+Sub storage()
+Dim xdim, ydim, docks As Integer
+
+xdim = InputBox("number of x units")
+ydim = InputBox("number of y units")
+docks = InputBox("number of docks")
+
+os = 3
+Cells(2, 3).Value = "Total"
+Range(Cells(os, os), Cells(os + ydim - 1, os + xdim - 1)).Select
+ With Selection.Borders
+ .LineStyle = xlContinuous
+ End With
+ 
+ Cells(os, os * 2 + xdim).Value = "d"
+ Cells(os + 1, os * 2 + xdim).Borders.LineStyle = xlContinuous
+ 
+For i = 1 To docks
+Cells(os, os * 2 + xdim + i).Value = i
+Next i
+For i = 1 To docks
+Cells(os + 1, os * 2 + xdim + i).Select
+ With Selection.Borders
+ .LineStyle = xlContinuous
+ End With
+Next i
+
+Cells(os + ydim, os).Value = "unit distance"
+For i = 1 To docks
+Range(Cells(os, os), Cells(os + ydim - 1, os + xdim - 1)).offset(1 + ydim, xdim * (i - 1) + i - 1).Select
+ With Selection.Borders
+ .LineStyle = xlContinuous
+ End With
+Next i
+
+Cells(os + 1 + ydim * 2, os).Value = "unit distance*d"
+For i = 1 To docks
+Range(Cells(os, os), Cells(os + ydim - 1, os + xdim - 1)).offset(2 + 2 * ydim, xdim * (i - 1) + i - 1).Select
+ With Selection.Borders
+ .LineStyle = xlContinuous
+ End With
+Next i
+
+Cells(os + 2 + ydim * 3, os).Value = "ud*d*percent"
+For i = 1 To docks
+Range(Cells(os, os), Cells(os + ydim - 1, os + xdim - 1)).offset(3 + ydim * 3, xdim * (i - 1) + i - 1).Select
+ With Selection.Borders
+ .LineStyle = xlContinuous
+ End With
+
+
+Next i
+
+End Sub
+
+Sub boxes()
+Cells.ColumnWidth = 5
+End Sub
