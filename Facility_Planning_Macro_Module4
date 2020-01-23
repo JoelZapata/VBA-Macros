@@ -1,0 +1,41 @@
+Sub Cal_prod_Req()
+Dim proIn As Double
+Dim proOut As Double
+Dim defPer As Double
+Dim num As Integer
+
+num = InputBox("n=")
+
+Cells(2, 3).Value = "I[k]"
+For i = 1 To num
+Cells(2 + i, 2).Value = i
+Cells(2 + i, 3).FormulaR1C1 = "=rc[3]/(1-rc[8])"
+Next i
+
+Cells(2, 6).Value = "O[k]"
+For i = 1 To num
+Cells(2 + i, 5).Value = i
+Next i
+For i = 1 To num - 1
+Cells(2 + i, 6).FormulaR1C1 = "=r[1]c[-3]"
+Next i
+Cells(2 + num, 6).Borders.LineStyle = xlSingle
+
+Cells(2, 9).Value = "D[k]"
+Cells(2, 10).Value = "R[k]"
+Cells(2, 11).Value = "Total %"
+Cells(2, 12).Value = "Scrap Cost/Unit"
+Cells(2, 13).Value = "Scrap Cost Total"
+For i = 1 To num
+Cells(2 + i, 8).Value = i
+Cells(2 + i, 11).FormulaR1C1 = "=rc[-2]*(1-rc[-1])"
+Cells(2 + i, 10).Value = 0
+Cells(2 + i, 13).FormulaR1C1 = "=rc[-1]*(rc[-10]-rc[-7])"
+Next i
+Cells(3 + num, 13).FormulaR1C1 = "=sum(r[" & -num & "]c:r[-1]c)"
+Cells(3 + num, 13).Borders.LineStyle = xlSingle
+
+
+
+ 
+End Sub
