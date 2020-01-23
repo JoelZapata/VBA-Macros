@@ -1,0 +1,71 @@
+Sub Tree()
+Dim nn As Integer
+Dim os1 As Integer
+
+Cells(1, 11).Value = "b_[s][t] = highlighted"
+
+nn = InputBox("number of nodes")
+
+Cells(3, 2).Value = "Vertex"
+Cells(4, 2).Value = "Parent"
+Cells(5, 2).Value = "Arc Lenght"
+Cells(6, 2).Value = "Weight"
+
+For i = 1 To nn
+    Cells(3, 2 + i).Value = i
+Next i
+
+os1 = 8
+Cells(8, 2).Value = "Distance"
+For i = 1 To nn
+    Cells(os1 + i, 2).Value = i
+    Cells(os1, 2 + i).Value = i
+Next i
+
+
+os1 = 8 + nn + 2
+Cells(os1, 2).Value = "calc"
+For i = 1 To nn
+    Cells(os1 + i, 2).Value = i
+    Cells(os1, 2 + i).Value = i
+Next i
+
+'7+nn
+os1 = 11 + nn
+For c = 1 To nn
+    For r = 0 To nn - 1
+        Cells(os1 + r, 2 + c).FormulaR1C1 = "=(r[" & -5 - nn - r & "]c[" & -c + 1 + r & "]*r[" & -5 - nn - r & "]c)/(r[" & -5 - nn - r & "]c[" & -c + 1 + r & "]+r[" & -5 - nn - r & "]c)"
+    Next r
+Next c
+
+os1 = 12 + 2 * nn
+Cells(os1, 2).Value = "mult"
+
+For i = 1 To nn
+    Cells(os1 + i, 2).Value = i
+    Cells(os1, 2 + i).Value = i
+Next i
+
+For r = 1 To nn
+    For c = 1 To nn
+    Cells(os1 + r, 2 + c).FormulaR1C1 = "=r[" & -2 - nn & "]c*r[" & -4 - 2 * nn & "]c"
+    Next c
+Next r
+
+    
+    Range(Cells(os1 + 1, 3), Cells(os1 + nn, 2 + nn)).Select
+    Selection.FormatConditions.AddTop10
+    Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+    With Selection.FormatConditions(1)
+        .TopBottom = xlTop10Top
+        .Rank = 1
+        .Percent = False
+    End With
+    With Selection.FormatConditions(1).Interior
+        .PatternColorIndex = xlAutomatic
+        .color = 65535
+        .TintAndShade = 0
+    End With
+    Selection.FormatConditions(1).StopIfTrue = False
+    
+End Sub
