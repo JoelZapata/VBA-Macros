@@ -1,0 +1,79 @@
+Sub CRAFT()
+Dim stations As Integer
+Dim offset As Integer
+Dim offset2 As Integer
+Dim unitCost As Integer
+
+stations = InputBox("Number of Stations (Rows/Cols)")
+
+'From to
+Range("B1").Value = "From-To"
+For i = 1 To stations
+
+Range("a2").offset(i, 0).Value = i
+Range("a2").offset(0, i).Value = i
+
+Range("a2").offset(i, 0).Borders(xlEdgeRight).LineStyle = xlDouble
+Range("a2").offset(0, i).Borders(xlEdgeBottom).LineStyle = xlDouble
+
+Next i
+
+'flow between
+Range("a1").offset(1 + stations + 2, 0).Value = "Flow Between"
+For i = 1 To stations
+
+Range("a2").offset(i + stations + 3, 0).Value = i
+Range("a2").offset(0 + stations + 3, i).Value = i
+
+Range("a2").offset(i + stations + 3, 0).Borders(xlEdgeRight).LineStyle = xlDouble
+Range("a2").offset(0 + stations + 3, i).Borders(xlEdgeBottom).LineStyle = xlDouble
+
+Next i
+
+offset = stations + 2
+For Row = 1 To stations
+    Count = 1
+    For col = Row To stations - 1
+        Range("b3").offset(Row + offset, col).FormulaR1C1 = "=r[" & Count - offset - 1 & "]c[" & -Count & "]+r[" & -offset - 1 & "]c"
+        Count = Count + 1
+    Next col
+Next Row
+
+'Distance Matix
+offset = 2 * stations + 6
+Range("a1").offset(offset, 0).Value = "Distance"
+For i = 1 To stations
+
+Range("a2").offset(i + offset, 0).Value = i
+Range("a2").offset(0 + offset, i).Value = i
+
+Range("a2").offset(i + offset, 0).Borders(xlEdgeRight).LineStyle = xlDouble
+Range("a2").offset(0 + offset, i).Borders(xlEdgeBottom).LineStyle = xlDouble
+
+Next i
+
+'flow between
+offset = 3 * stations + 8
+Range("a1").offset(1 + offset, 0).Value = "Distance Cost (Unit Cost not factored in)"
+For i = 1 To stations
+
+Range("a2").offset(i + offset + 1, 0).Value = i
+Range("a2").offset(0 + offset + 1, i).Value = i
+
+Range("a2").offset(i + offset + 1, 0).Borders(xlEdgeRight).LineStyle = xlDouble
+Range("a2").offset(0 + offset + 1, i).Borders(xlEdgeBottom).LineStyle = xlDouble
+
+Next i
+
+offset2 = 2 * stations + 6
+For Row = 1 To stations
+    Count = 1
+    For col = Row To stations - 1
+        Range("b3").offset(Row + offset, col).FormulaR1C1 = "=r[" & -offset2 & "]c*r[" & -stations - 3 & "]c"
+        Count = Count + 1
+    Next col
+Next Row
+
+
+End Sub
+
