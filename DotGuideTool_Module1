@@ -1,0 +1,271 @@
+Option Explicit
+
+Sub sbChangeColumnWidthMulti()
+Columns("A:ZE").ColumnWidth = 6.5
+End Sub
+
+Sub Export_To_Word()
+
+Application.DisplayAlerts = False
+Application.ScreenUpdating = False
+Application.EnableEvents = False
+Application.DisplayStatusBar = False
+Application.Calculation = xlCalculationManual
+ActiveSheet.DisplayPageBreaks = False
+
+
+Dim setLen As Integer
+Dim i As Integer
+Dim j As Integer
+Dim k As Integer
+k = 1
+i = 3
+
+'Clears MArch List
+    Sheets("Marchers List").Range("A:A").Value = ""
+    
+'Loop to Find Length
+    Do Until IsEmpty(Sheets("Master").Cells(i, 1))
+    i = i + 1
+    Loop
+    setLen = i - 3
+
+'Loop to Copy to array
+    For i = 3 To setLen + 2
+    j = 2
+        Do Until IsEmpty(Cells(i, j))
+            Sheets("Marchers List").Cells(k, 1).Value = Cells(i, j).Value
+        j = j + 1
+        k = k + 1
+        Loop
+    j = j - 2
+    Next i
+    
+'Removes dups
+    Dim Dict As Object
+    Dim rowCount As Long
+    Dim strVal As String
+
+    Set Dict = CreateObject("Scripting.Dictionary")
+    rowCount = k
+    
+    Do While rowCount > 0
+      strVal = Sheets("Marchers List").Cells(rowCount, 1).Value2
+      If Dict.exists(strVal) Then
+        Sheets("Marchers List").Rows(rowCount).EntireRow.Delete
+        k = k - 1 ' sets k to uniq marchers
+      Else
+        Dict.Add strVal, 0
+      End If
+      rowCount = rowCount - 1
+    Loop
+    Set Dict = Nothing
+    
+
+    
+'Sorts Array
+    ActiveWorkbook.Worksheets("Marchers List").sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("Marchers List").sort.SortFields.Add key:=Range( _
+        "A1"), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:= _
+        xlSortNormal
+    With ActiveWorkbook.Worksheets("Marchers List").sort
+        .SetRange Range("A1:A38")
+        .Header = xlNo
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+    
+'Adds sets to marchers
+    Dim marcher As String
+    Dim my As Integer 'march y
+    Dim uy As Integer 'MASTER Y
+    Dim ty As Integer
+    Dim tx As Integer 'marc x
+    Dim mx As Integer 'master x''''
+    Dim counter As Integer 'counts till 20
+
+
+    Worksheets("Temp").Cells(1, 1).Value = "Performer"
+    
+    For uy = 1 To k - 1 ' works with marcher name
+    
+    marcher = Worksheets("Marchers List").Cells(uy, 1).Value
+    Worksheets("Temp").Cells(1, 1).Value = "Performer"
+    Worksheets("Temp").Cells(1, 2).Value = Worksheets("Marchers List").Cells(uy, 1).Value
+    Worksheets("Temp").Cells(1, 2).HorizontalAlignment = xlCenter
+    
+    ty = 3
+    tx = 1
+    
+        For my = 3 To setLen
+
+            For mx = 2 To 999
+                If Worksheets("Master").Cells(my, mx).Value = marcher Then
+                    Worksheets("Temp").Cells(ty, tx).Value = Worksheets("Master").Cells(my, 1).Value
+                    ty = ty + 1
+                    If ty Mod 25 = 0 Then
+                    tx = tx + 2
+                    ty = 3
+                    End If
+                End If
+            Next mx
+        Next my
+    Next uy
+
+ '   Dim marcher As String
+  '  Dim my As Integer 'march y
+   ' Dim uy As Integer 'MASTER Y
+    Dim ux As Integer 'marc x
+    'Dim mx As Integer 'master x''''
+
+
+
+    For uy = 1 To k - 1 ' works with marcher name
+        marcher = Worksheets("Marchers List").Cells(uy, 1).Value
+        ux = 2
+        For my = 3 To setLen ''
+
+            For mx = 2 To 999
+                If Worksheets("Master").Cells(my, mx).Value = marcher Then
+                    Worksheets("Marchers List").Cells(uy, ux).Value = Worksheets("Master").Cells(my, 1).Value
+                    ux = ux + 1
+                End If
+            Next mx
+        Next my
+    Next uy
+        
+'to word
+'    Dim WdOb As Object, fname As String
+'    fname = "Dot_Guide_Lists_" & Now
+'    Set WdOb = CreateObject("word.application")
+'    WdOb.Visible = True
+            
+    
+Application.DisplayAlerts = True
+Application.ScreenUpdating = True
+Application.EnableEvents = True
+Application.DisplayStatusBar = True
+Application.Calculation = xlCalculationAutomatic
+
+End Sub
+
+Sub AlternateRowColors()
+
+Dim i As Integer
+
+    For i = 2 To 9999
+    If i Mod 2 = 1 Then
+        Cells(i, 1).Interior.ColorIndex = 15 ''color to preference
+    Else
+        Cells(i, 1).Interior.ColorIndex = 48 ''color to preference or remove
+    End If
+Next i
+
+End Sub
+
+
+Sub mapExporter()
+    Dim v As Variant
+    Dim k As Variant
+    Dim Arr() As Variant
+    Dim row As Integer
+    Dim col As Integer
+    Dim sets As Object
+    Set sets = CreateObject("Scripting.Dictionary")
+    Dim C As Collection
+    Dim i As Integer
+    row = 3
+    sets.CompareMode = 1
+   
+    Do Until IsEmpty(Cells(row, 1))
+        col = 2
+        Do Until IsEmpty(Cells(row, col))
+            Dim cell_value As String
+            cell_value = Cells(row, col).Value
+            Dim set_num As String
+            set_num = Cells(row, 1).Value
+            Set C = New Collection
+            If sets.exists(cell_value) Then
+                sets(cell_value).Add (set_num)
+            Else
+                C.Add (set_num)
+                sets.Add cell_value, C
+            End If
+        col = col + 1
+        Loop
+    row = row + 1
+    Loop
+
+'''''''''''''''''''''''''''
+    Dim objWord
+    Dim objDoc
+    Dim objSelection
+    Set objWord = CreateObject("Word.Application")
+    Set objDoc = objWord.Documents.Add
+
+    objWord.Visible = True
+    Set objSelection = objWord.Selection
+
+''''''''''''''''''''''''''''''''''
+'''''''''''TYPES TO WORD''''''''''
+''''''''''''''''''''''''''''''''''
+    
+    With objSelection.PageSetup.TextColumns
+     .SetCount NumColumns:=3
+     .Add EvenlySpaced:=True
+    End With
+
+    For i = 0 To (sets.Count - 1)
+        objSelection.Font.Bold = True
+        objSelection.typetext "Performer: " & sets.Keys()(i) & Chr(11)
+        objSelection.Font.Bold = False
+        objSelection.typetext "[   "
+        For Each v In sets(sets.Keys()(i))
+        objSelection.typetext v
+        objSelection.typetext "   "
+        Next v
+        objSelection.typetext "]" & Chr(11) & Chr(11)
+    Next i
+    
+    
+End Sub
+Sub Tester()
+
+    Dim d, i
+    Set d = CreateObject("scripting.dictionary")
+
+    d.Add "K1", "v1"
+    d.Add "K2", "v2"
+    d.Add "K3", "v3"
+
+    For i = 0 To d.Count - 1
+        Debug.Print d.Keys()(i)
+    Next i
+
+End Sub
+
+    '    For row = 3 To 1000 ' fix number
+'        For col = 2 To 1000  'fix numner
+'            Dim cell_value As String
+'            cell_value = Cells(row, col).Value
+'            Dim set_num As String
+'            set_num = Cells(row, 1).Value
+'            Set C = New Collection
+'            If sets.exists(cell_value) Then
+'                sets(cell_value).Add (set_num)
+'            Else
+'                C.Add (set_num)
+'                sets.Add cell_value, C
+'            End If
+'        Next col
+'    Next row
+
+    
+    'Sorts sets
+
+    'MsgBox "Collection for T1:"
+    'For Each v In sets("T1")
+    '    MsgBox v
+    'Next v
